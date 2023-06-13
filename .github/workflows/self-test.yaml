@@ -1,0 +1,21 @@
+name: Self Test
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  runValidation:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Check 2 YAML files against JSON Schema
+        id: validation
+        uses: lyubick/action-YAML-schema-validator@vAlpha
+        with:
+          yaml-file: test/yaml_valid.yaml
+          json-file: test/json_schema.json
+      - name: Print output
+        run: echo "${{ steps.validation.outputs.result }}"
