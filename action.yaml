@@ -6,9 +6,6 @@ inputs:
     required: true
   json-file:
     description: 'JSON Schema file to validate against'
-outputs:
-  result:
-    description: 'Result of validation'
 runs:
   using: 'docker'
   image: 'Dockerfile'

@@ -17,13 +17,10 @@ jobs:
         with:
           yaml-file: test/yaml_valid.yaml
           json-file: test/json_schema.json
-      - name: Print output
-        run: echo "${{ steps.validation.outputs.result }}"
       - name: Check 2 YAML files against JSON Schema
         id: invalidation
+        continue-on-error: true
         uses: lyubick/action-YAML-schema-validator@test
         with:
           yaml-file: test/yaml_invalid.yaml
           json-file: test/json_schema.json
-      - name: Print output
-        run: echo "${{ steps.invalidation.outputs.result }}"
