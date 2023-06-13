@@ -1,4 +1,4 @@
-name: 'YAML Schema validator'
+name: 'YAML file validation against JSON Schema'
 description: 'Validates YAML file schema against provided JSON Schema file'
 inputs:
   json-schema-file:
