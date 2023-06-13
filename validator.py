@@ -1,5 +1,6 @@
 import json
 import os.path
+import pathlib
 import sys
 
 import yaml
@@ -22,17 +23,16 @@ if __name__ == '__main__':
 
     yaml_input = list(args[1].split(','))
 
+    recursive = args[2].lower() == 'true'
+
     yaml_files = []
     for yaml_object in yaml_input:
         if os.path.isdir(yaml_object):
             yaml_files.extend(
                 list(
-                    map(
-                        lambda f: yaml_object + ('/' if not yaml_object.endswith('/') else '') + f,
-                        filter(
-                            lambda f: str(f).endswith('.yaml') or str(f).endswith('.yml'),
-                            os.listdir(yaml_object)
-                        )
+                    filter(
+                        lambda f: str(f).endswith('.yaml') or str(f).endswith('.yml'),
+                        pathlib.Path(yaml_object).glob('**/*' if recursive else '*')
                     )
                 )
             )

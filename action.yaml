@@ -10,9 +10,14 @@ inputs:
   yaml-file-dir:
     description: 'Comma separated list of YAML files and/or directories that require validation'
     required: true
+  recursive:
+    description: 'True/False, provide True if recursive scan for YAML files in directory required'
+    required: false
+    default: 'false'
 runs:
   using: 'docker'
   image: 'Dockerfile'
   args:
     - ${{ inputs.json-schema-file }}
     - ${{ inputs.yaml-file-dir }}
+    - ${{ inputs.recursive }}

@@ -18,12 +18,14 @@ jobs:
         with:
           json-schema-file: path/to/my/cool/schema.json
           yaml-file-dir: path/to/my/cool/yaml/file.yaml
+          recursive: false
 ```
 One should provide two parameters:
 - `json-schema-file`, points to legit JSON Schema file
 - `yaml-file-dir`, is a comma separated list that contains
   - Single YAML files
   - Directories that will be parsed for `.yaml` and `.yml` files
+- `recursive`, True/False depending on if recursive scan for YAML files in directory required
 
 ## Results
 ### Success
