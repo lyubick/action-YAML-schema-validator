@@ -1,0 +1,26 @@
+name: Self Test
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  runValidation:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Check 2 YAML files against JSON Schema
+        id: validation
+        uses: lyubick/action-YAML-schema-validator@test
+        with:
+          json-schema-file: test/json_schema.json
+          yaml-file-dir: test/yaml_valid.yaml
+      - name: Check 2 YAML files against JSON Schema
+        id: invalidation
+        continue-on-error: true
+        uses: lyubick/action-YAML-schema-validator@test
+        with:
+          json-schema-file: test/json_schema.json
+          yaml-file-dir: test/yaml_invalid.yaml

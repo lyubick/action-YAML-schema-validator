@@ -1,17 +1,15 @@
 name: 'YAML Schema validator'
 description: 'Validates YAML file schema against provided JSON Schema file'
 inputs:
-  yaml-file:
-    description: 'YAML file that requires validation'
-    required: true
-  json-file:
+  json-schema-file:
     description: 'JSON Schema file to validate against'
-outputs:
-  result:
-    description: 'Result of validation'
+    required: true
+  yaml-file-dir:
+    description: 'Comma separated list of YAML files and/or directories that require validation'
+    required: true
 runs:
   using: 'docker'
   image: 'Dockerfile'
   args:
-    - ${{ inputs.yaml-file }}
-    - ${{ inputs.json-file }}
+    - ${{ inputs.json-schema-file }}
+    - ${{ inputs.yaml-file-dir }}

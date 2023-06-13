@@ -1,0 +1,11 @@
+{
+  "title": "TestConfig",
+  "description": "Test Basic YAML File",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "field1": {
+      "type": "string"
+    }
+  }
+}
