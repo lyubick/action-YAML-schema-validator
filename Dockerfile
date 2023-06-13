@@ -7,4 +7,4 @@ ADD validator.py /
 
 RUN pip install -r requirements.txt
 
-ENTRYPOINT ["python", "validator.py"]
+ENTRYPOINT ["python", "/validator.py"]
