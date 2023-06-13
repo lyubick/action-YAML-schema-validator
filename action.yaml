@@ -13,5 +13,5 @@ runs:
   using: 'docker'
   image: 'Dockerfile'
   args:
-    - ${{ inputs.yaml-file }}
     - ${{ inputs.json-file }}
+    - ${{ inputs.yaml-file }}
