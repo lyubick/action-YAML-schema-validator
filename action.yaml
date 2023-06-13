@@ -1,5 +1,8 @@
 name: 'YAML file validation against JSON Schema'
 description: 'Validates YAML file schema against provided JSON Schema file'
+branding:
+  icon: check-circle
+  color: green
 inputs:
   json-schema-file:
     description: 'JSON Schema file to validate against'
