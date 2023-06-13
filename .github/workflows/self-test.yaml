@@ -15,12 +15,12 @@ jobs:
         id: validation
         uses: lyubick/action-YAML-schema-validator@test
         with:
-          yaml-file: test/yaml_valid.yaml
-          json-file: test/json_schema.json
+          json-schema-file: test/json_schema.json
+          yaml-file-dir: test/yaml_valid.yaml
       - name: Check 2 YAML files against JSON Schema
         id: invalidation
         continue-on-error: true
         uses: lyubick/action-YAML-schema-validator@test
         with:
-          yaml-file: test/yaml_invalid.yaml
-          json-file: test/json_schema.json
+          json-schema-file: test/json_schema.json
+          yaml-file-dir: test/yaml_invalid.yaml
