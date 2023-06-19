@@ -16,13 +16,13 @@ jobs:
           pip install -r requirements-test.txt
           pytest test/ -rxXs
       - name: Check YAML files inside directory
-        uses: ./action.yaml
+        uses: ./
         continue-on-error: true
         with:
           json-schema-file: test/schema/json_schema.json
           yaml-file-dir: test/YAMLs/
       - name: Check JSON files inside directory
-        uses: ./action.yaml
+        uses: ./
         continue-on-error: true
         with:
           json-schema-file: test/schema/json_schema.json
