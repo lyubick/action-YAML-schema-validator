@@ -1,25 +1,29 @@
+---
 name: Self Test
 
-on:
+'on':
   pull_request:
-    branches: [ main ]
+    branches: ['main']
 
 jobs:
   runValidation:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: Check if directory is not scanned, due to recursive is False (should PASS)
-        id: validation
-        uses: lyubick/action-YAML-schema-validator@test
-        with:
-          json-schema-file: test/json_schema.json
-          yaml-file-dir: test/
-      - name: Check if directory is scanned, due to recursive is True (should FAIL)
-        id: invalidation
+      - name: Run PyTest(s)
+        run: |
+          pip install -r requirements.txt
+          pip install -r requirements-test.txt
+          pytest test/ -rxXs
+      - name: Check YAML files inside directory
+        uses: ./
         continue-on-error: true
-        uses: lyubick/action-YAML-schema-validator@test
         with:
-          json-schema-file: test/json_schema.json
-          yaml-file-dir: test/
-          recursive: true
+          json-schema-file: test/schema/json_schema.json
+          yaml-file-dir: test/YAMLs/
+      - name: Check JSON files inside directory
+        uses: ./
+        continue-on-error: true
+        with:
+          json-schema-file: test/schema/json_schema.json
+          yaml-file-dir: test/JSONs/

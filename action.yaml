@@ -1,5 +1,7 @@
-name: 'YAML file validation against JSON Schema'
-description: 'Validates YAML file schema against provided JSON Schema file'
+---
+name: 'YAML/JSON validation against JSON Schema'
+description: |
+  Validates YAML or JSON file(s) against provided JSON Schema file
 branding:
   icon: check-circle
   color: green
@@ -7,11 +9,15 @@ inputs:
   json-schema-file:
     description: 'JSON Schema file to validate against'
     required: true
-  yaml-file-dir:
-    description: 'Comma separated list of YAML files and/or directories that require validation'
+  yaml-json-file-dir:
+    description: |
+      Comma separated list of YAML or JSON files and/or directories that require
+      validation.
     required: true
   recursive:
-    description: 'True/False, provide True if recursive scan for YAML files in directory required'
+    description: |
+      True/False, provide True if recursive scan for YAML or JSON files
+      in directory required.
     required: false
     default: 'false'
 runs:
