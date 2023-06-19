@@ -1,8 +1,8 @@
-# action-YAML-schema-validator
+# YAML/JSON File(s) Validation against JSON Schema
 
 ## Overview
-This action can validate YAML files against provided JSON Schema. In case if YAML file is in full compliance
-with provided JSON Schema action will exit gracefully, crash (unhandled exception) will occur otherwise.
+This action can validate YAML or JSON files against provided JSON Schema. In case if provided file is in full compliance
+with provided JSON Schema, action will exit gracefully, crash (unhandled exception) will occur otherwise.
 
 The JSON Schema format used, should be in compliance with https://json-schema.org/. 
 
@@ -14,20 +14,20 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: Check my YAML file with my JSON schema
+      - name: Check my YAML/JSON file with my JSON schema
         id: validation
-        uses: lyubick/action-YAML-schema-validator@v1
+        uses: lyubick/action-YAML-schema-validator@v2
         with:
           json-schema-file: path/to/my/cool/schema.json
-          yaml-file-dir: path/to/my/cool/yaml/file.yaml
+          yaml-json-file-dir: path/to/my/cool/yaml/file.yaml
           recursive: false
 ```
 One should provide two parameters:
 - `json-schema-file`, points to legit JSON Schema file
-- `yaml-file-dir`, is a comma separated list that contains
-  - Single YAML files
-  - Directories that will be parsed for `.yaml` and `.yml` files
-- `recursive`, True/False depending on if recursive scan for YAML files in directory required
+- `yaml-json-file-dir`, is a comma separated list that contains
+  - Single YAML or JSON files
+  - Directories that will be parsed for `.yaml` or `.yml` or `.json` files
+- `recursive`, True/False depending on if recursive scan for YAML or JSON files in directory required
 
 ## Results
 ### Success
@@ -56,15 +56,32 @@ Traceback ...
   }
 }
 ```
-### YAML Valid file (compliant with Schema)
+
+### Valid file (compliant with Schema)
+#### YAML
 ```yaml
 field1: Value1
 ```
+#### JSON
+```json
+{
+  "field1": "Value1"
+}
+```
 
-### YAML Invalid file (not compliant with Schema)
+### Invalid file (not compliant with Schema)
+#### YAML
 ```yaml
 field2: Value2
 ```
+
+#### JSON
+```json
+{
+  "field2": "Value1"
+}
+```
+
 Validating this file will cause error (Exception) thus failing an action
 ```text
 Failed validating 'additionalProperties' in schema:

@@ -9,7 +9,7 @@ inputs:
   json-schema-file:
     description: 'JSON Schema file to validate against'
     required: true
-  yaml-file-dir:
+  yaml-json-file-dir:
     description: |
       Comma separated list of YAML or JSON files and/or directories that require
       validation.
