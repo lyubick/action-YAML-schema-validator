@@ -25,5 +25,5 @@ runs:
   image: 'Dockerfile'
   args:
     - ${{ inputs.json-schema-file }}
-    - ${{ inputs.yaml-file-dir }}
+    - ${{ inputs.yaml-json-file-dir }}
     - ${{ inputs.recursive }}
