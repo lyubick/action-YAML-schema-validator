@@ -1,2 +1,6 @@
 /**/venv/
 /**/.idea
+# Pytest
+/**/.pytest_cache
+/**/htmlcov
+/**/.coverage

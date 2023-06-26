@@ -18,12 +18,12 @@ class Test:
 
     def test3_validate_valid_file(self):
         schema = validator.load_schema(f'{self.abs_path}/schema/json_schema.json')
-        files = validator.get_yaml_json_files_list(f'{self.abs_path}/YAMLs/yaml_valid.yaml', False)
+        files = validator.get_yaml_json_files_list(f'{self.abs_path}/YAMLs/valid.yaml', False)
         assert validator.validate_files(files, schema)
 
     def test4_validate_invalid_file(self):
         schema = validator.load_schema(f'{self.abs_path}/schema/json_schema.json')
-        files = validator.get_yaml_json_files_list(f'{self.abs_path}/YAMLs/yaml_invalid.yaml', False)
+        files = validator.get_yaml_json_files_list(f'{self.abs_path}/YAMLs/invalid.yaml', False)
         try:
             validator.validate_files(files, schema)
             assert False
@@ -32,12 +32,12 @@ class Test:
 
     def test5_validate_valid_file_json(self):
         schema = validator.load_schema(f'{self.abs_path}/schema/json_schema.json')
-        files = validator.get_yaml_json_files_list(f'{self.abs_path}/JSONs/yaml_valid.json', False)
+        files = validator.get_yaml_json_files_list(f'{self.abs_path}/JSONs/valid.json', False)
         assert validator.validate_files(files, schema)
 
     def test6_validate_invalid_file_json(self):
         schema = validator.load_schema(f'{self.abs_path}/schema/json_schema.json')
-        files = validator.get_yaml_json_files_list(f'{self.abs_path}/JSONs/yaml_invalid.json', False)
+        files = validator.get_yaml_json_files_list(f'{self.abs_path}/JSONs/invalid.json', False)
         try:
             validator.validate_files(files, schema)
             assert False
