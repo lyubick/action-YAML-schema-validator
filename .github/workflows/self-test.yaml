@@ -17,13 +17,6 @@ jobs:
           pytest test/ -rxXs
       - name: Check YAML files inside directory
         uses: ./
-        continue-on-error: true
         with:
           json-schema-file: test/schema/json_schema.json
-          yaml-file-dir: test/YAMLs/
-      - name: Check JSON files inside directory
-        uses: ./
-        continue-on-error: true
-        with:
-          json-schema-file: test/schema/json_schema.json
-          yaml-file-dir: test/JSONs/
+          yaml-json-file-dir: test/YAMLs/valid.json,test/JSONs/valid.json
