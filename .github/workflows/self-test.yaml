@@ -15,7 +15,7 @@ jobs:
           pip install -r requirements.txt
           pip install -r requirements-test.txt
           pytest test/ -rxXs
-      - name: Check YAML files inside directory
+      - name: Run Action (valid files)
         uses: ./
         with:
           json-schema-file: test/schema/json_schema.json
