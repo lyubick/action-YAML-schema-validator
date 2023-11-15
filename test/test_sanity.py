@@ -40,7 +40,7 @@ class Test:
 
     def test6_validate_invalid_file_json(self):
         schema = validator.load_schema(f'{self.abs_path}/schema/json_schema.json')
-        files = validator.get_yaml_json_files_list(f'{self.abs_path}/JSONs/invalid.json', False)
+        files = validator.get_yaml_json_files_list(f'{self.abs_path}/JSONs/invalid1.json', False)
         try:
             validator.validate_files(files, schema)
             assert False
