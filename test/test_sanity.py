@@ -69,8 +69,8 @@ class Test:
         except Exception as exc:
             assert len(exc.args) == 1
             assert len(exc.args[0]) == 2
-            assert exc.args[0][1][1] == {'field2': 'Value2'}
-            assert exc.args[0][0][1] == {'field2': 'Value2_2'}
+            assert exc.args[0][0][1] == {'field2': 'Value2'}
+            assert exc.args[0][1][1] == {'field2': 'Value2_2'}
 
     def test9_validate_empty_json(self):
         schema = validator.load_schema(f'{self.abs_path}/schema/json_schema.json')
