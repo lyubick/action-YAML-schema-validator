@@ -75,5 +75,11 @@ if __name__ == '__main__':
     args = sys.argv[1:]
 
     schema = load_schema(args[0])
-    files = get_yaml_json_files_list(args[1], args[2].lower() == 'true')
+
+    files = get_yaml_json_files_list(
+        files_paths_list=args[1],
+        is_recursive=args[2].lower() == 'true',
+        ignore_empty_files=args[3].lower() == 'true'
+    )
+
     validate_files(files, schema)

@@ -26,6 +26,10 @@ inputs:
       otherwise empty files will be ignored.
     required: false
     default: 'true'
+  schema-mapping:
+    description: ...
+    required: false
+    default: ''
 runs:
   using: 'docker'
   image: 'Dockerfile'
