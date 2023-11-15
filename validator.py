@@ -42,7 +42,7 @@ def get_yaml_json_files_list(files_paths_list: str, is_recursive: bool, ignore_e
     if ignore_empty_files:
         yaml_files = list(filter(lambda f: os.path.getsize(f) > 0, yaml_files))
 
-    return yaml_files
+    return sorted(yaml_files)
 
 
 def validate_files(yaml_files: list, json_schema: json):
