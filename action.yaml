@@ -20,6 +20,12 @@ inputs:
       in directory required.
     required: false
     default: 'false'
+  ignore-empty:
+    description: |
+      True/False, provide False if error should be raised on empty files,
+      otherwise empty files will be ignored.
+    required: false
+    default: 'true'
 runs:
   using: 'docker'
   image: 'Dockerfile'
@@ -27,3 +33,4 @@ runs:
     - ${{ inputs.json-schema-file }}
     - ${{ inputs.yaml-json-file-dir }}
     - ${{ inputs.recursive }}
+    - ${{ inputs.ignore-empty }}

@@ -1,3 +1,4 @@
+import json
 from pathlib import Path
 
 import validator
@@ -27,8 +28,10 @@ class Test:
         try:
             validator.validate_files(files, schema)
             assert False
-        except jsonschema.exceptions.ValidationError as exc:
-            assert exc.instance == {'field2': 'Value2'}
+        except Exception as exc:
+            assert len(exc.args) == 1
+            assert len(exc.args[0]) == 1
+            assert exc.args[0][0][1] == {'field2': 'Value2'}
 
     def test5_validate_valid_file_json(self):
         schema = validator.load_schema(f'{self.abs_path}/schema/json_schema.json')
@@ -41,8 +44,10 @@ class Test:
         try:
             validator.validate_files(files, schema)
             assert False
-        except jsonschema.exceptions.ValidationError as exc:
-            assert exc.instance == {'field2': 'Value2'}
+        except Exception as exc:
+            assert len(exc.args) == 1
+            assert len(exc.args[0]) == 1
+            assert exc.args[0][0][1] == {'field2': 'Value2'}
 
     def test7_validate_folder_yaml(self):
         schema = validator.load_schema(f'{self.abs_path}/schema/json_schema.json')
@@ -50,8 +55,10 @@ class Test:
         try:
             validator.validate_files(files, schema)
             assert False
-        except jsonschema.exceptions.ValidationError as exc:
-            assert exc.instance == {'field2': 'Value2'}
+        except Exception as exc:
+            assert len(exc.args) == 1
+            assert len(exc.args[0]) == 1
+            assert exc.args[0][0][1] == {'field2': 'Value2'}
 
     def test8_validate_folder_json(self):
         schema = validator.load_schema(f'{self.abs_path}/schema/json_schema.json')
@@ -59,5 +66,22 @@ class Test:
         try:
             validator.validate_files(files, schema)
             assert False
-        except jsonschema.exceptions.ValidationError as exc:
-            assert exc.instance == {'field2': 'Value2'}
+        except Exception as exc:
+            assert len(exc.args) == 1
+            assert len(exc.args[0]) == 2
+            assert exc.args[0][1][1] == {'field2': 'Value2'}
+            assert exc.args[0][0][1] == {'field2': 'Value2_2'}
+
+    def test9_validate_empty_json(self):
+        schema = validator.load_schema(f'{self.abs_path}/schema/json_schema.json')
+        files = validator.get_yaml_json_files_list(f'{self.abs_path}/emptyJSONs/empty.json', False, True)
+        validator.validate_files(files, schema)
+
+    def test9_validate_empty_json_fail(self):
+        schema = validator.load_schema(f'{self.abs_path}/schema/json_schema.json')
+        files = validator.get_yaml_json_files_list(f'{self.abs_path}/emptyJSONs/empty.json', False, False)
+        try:
+            validator.validate_files(files, schema)
+            assert False
+        except json.JSONDecodeError as exc:
+            assert True

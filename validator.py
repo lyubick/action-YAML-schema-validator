@@ -19,7 +19,7 @@ def load_schema(schema_file_path: str) -> json:
         raise f'Provided JSON Schema file does not exist!'
 
 
-def get_yaml_json_files_list(files_paths_list: str, is_recursive: bool) -> list[str]:
+def get_yaml_json_files_list(files_paths_list: str, is_recursive: bool, ignore_empty_files: bool = False) -> list[str]:
     yaml_input = list(files_paths_list.split(','))
 
     yaml_files = []
@@ -39,10 +39,14 @@ def get_yaml_json_files_list(files_paths_list: str, is_recursive: bool) -> list[
         elif os.path.isfile(yaml_object):
             yaml_files.append(yaml_object)
 
+    if ignore_empty_files:
+        yaml_files = list(filter(lambda f: os.path.getsize(f) > 0, yaml_files))
+
     return yaml_files
 
 
 def validate_files(yaml_files: list, json_schema: json):
+    failed = []
     for yaml_file in yaml_files:
         if os.path.exists(yaml_file):
             if os.path.isfile(yaml_file):
@@ -55,11 +59,15 @@ def validate_files(yaml_files: list, json_schema: json):
                     validate(instance=yaml_json, schema=json_schema)
                 except ValidationError as exc:
                     print(f'File `{yaml_file}` failed validation with >>>`{exc}`<<<', file=sys.stderr)
-                    raise exc
+                    failed.append((yaml_file, exc.instance))
             else:
                 raise f'Provided YAML file is not a file! Please provide legit YAML file.'
         else:
             raise f'Provided YAML file does not exist!'
+
+    if failed:
+        raise Exception(failed)
+
     return True
 
 

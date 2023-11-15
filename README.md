@@ -94,3 +94,6 @@ Failed validating 'additionalProperties' in schema:
 On instance:
     {'field2': 'Value2'}
 ```
+
+## Supported & Used by
+* [Printify](https://github.com/printify)

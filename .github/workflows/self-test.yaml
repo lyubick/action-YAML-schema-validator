@@ -20,3 +20,8 @@ jobs:
         with:
           json-schema-file: test/schema/json_schema.json
           yaml-json-file-dir: test/YAMLs/valid.json,test/JSONs/valid.json
+      - name: Run Action (empty files valid)
+        uses: ./
+        with:
+          json-schema-file: test/schema/json_schema.json
+          yaml-json-file-dir: test/emptyJSONs,test/emptyYAMLSs,
