@@ -63,7 +63,7 @@ def get_filenames_with_schema(
         values = inp.split(separator)
         return values[0], values[1]
 
-    def map_schema(filename: str, schema_map: dict[str, str]) -> Tuple[str, json]:
+    def map_schema(filename: str, schema_map: dict[str, str]) -> Tuple[str, dict]:
         for s in schema_map.keys():
             if filename in get_all_filenames(input_path=s, endings=['yaml', 'json'], is_recursive=True):
                 return filename, schemas[schema_map[s]]
