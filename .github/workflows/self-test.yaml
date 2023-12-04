@@ -24,4 +24,10 @@ jobs:
         uses: ./
         with:
           json-schema-file: test/schema/json_schema.json
-          yaml-json-file-dir: test/emptyJSONs,test/emptyYAMLSs,
+          yaml-json-file-dir: test/emptyJSONs,test/emptyYAMLSs
+      - name: Run Action (check mapping)
+        uses: ./
+        with:
+          json-schema-file: test/schema/json_schema.json
+          yaml-json-file-dir: test/emptyJSONs,test/emptyYAMLSs
+          schema-mapping: 'test/emptyJSONs:test/schema/json_schema.json,test/emptyYAMLSs:test/schema/json_schema.json'

@@ -1,43 +1,53 @@
 import json
+import logging
 import os.path
 import pathlib
+import re
 import sys
+from typing import List, Tuple, Optional
 
 import yaml
 from jsonschema import validate
 from jsonschema.exceptions import ValidationError
 
 
-def load_schema(schema_file_path: str) -> json:
-    if os.path.exists(schema_file_path):
-        if os.path.isfile(schema_file_path):
-            with open(schema_file_path, 'r') as stream:
-                return json.loads("".join(stream.readlines()))
-        else:
-            raise f'Provided JSON Schema is not a file! Please provide legit JSON Schema file.'
-    else:
-        raise f'Provided JSON Schema file does not exist!'
+def get_all_filenames(input_path: str, endings: List[str], is_recursive: bool) -> List[str]:
+    paths = list(input_path.split(','))
 
+    regex_endings = f'.*\\.({"|".join(endings)})'
 
-def get_yaml_json_files_list(files_paths_list: str, is_recursive: bool, ignore_empty_files: bool = False) -> list[str]:
-    yaml_input = list(files_paths_list.split(','))
+    output_files = []
 
-    yaml_files = []
-    for yaml_object in yaml_input:
-        if os.path.isdir(yaml_object):
-            yaml_files.extend(
-                list(
-                    map(
-                        lambda f: str(f),  # Convert all paths to string, instead of Posix Path
-                        filter(
-                            lambda f: str(f).endswith('.yaml') or str(f).endswith('.yml') or str(f).endswith('.json'),
-                            pathlib.Path(yaml_object).glob('**/*' if is_recursive else '*')
+    for path in paths:
+        if os.path.exists(path):
+            if os.path.isdir(path):
+                output_files.extend(
+                    list(
+                        map(
+                            lambda f: str(f),  # Convert all paths to string, instead of Posix Path
+                            filter(
+                                lambda f: len(re.findall(regex_endings, str(f))) > 0,
+                                pathlib.Path(path).glob('**/*' if is_recursive else '*')
+                            )
                         )
                     )
                 )
-            )
-        elif os.path.isfile(yaml_object):
-            yaml_files.append(yaml_object)
+            elif os.path.isfile(path):
+                output_files.append(path)
+            else:
+                continue
+
+    return output_files
+
+
+def get_all_schemas(schema_file_path: str) -> dict[str, json]:
+    schema_files = get_all_filenames(schema_file_path, endings=['json'], is_recursive=False)
+    schemas = list(map(lambda x: (x, json.loads(''.join(open(x, 'r').readlines()))), schema_files))
+    return dict(schemas)
+
+
+def get_testing_filenames(files_paths_list: str, is_recursive: bool, ignore_empty_files: bool = False) -> list[str]:
+    yaml_files = get_all_filenames(files_paths_list, endings=['json', 'yaml', 'yml'], is_recursive=is_recursive)
 
     if ignore_empty_files:
         yaml_files = list(filter(lambda f: os.path.getsize(f) > 0, yaml_files))
@@ -45,9 +55,33 @@ def get_yaml_json_files_list(files_paths_list: str, is_recursive: bool, ignore_e
     return sorted(yaml_files)
 
 
-def validate_files(yaml_files: list, json_schema: json):
+def get_filenames_with_schema(test_files: List[str], schemas: dict[str, json], mapping_str: Optional[str]) -> List[Tuple[str, json]]:
+    def tuple_split(inp: str, separator: str) -> Tuple[str, str]:
+        values = inp.split(separator)
+        return values[0], values[1]
+
+    def map_schema(filename: str, schema_map: dict[str, str]) -> Tuple[str, str]:
+        for s in schema_map.keys():
+            if filename in get_all_filenames(input_path=s, endings=['yaml', 'json'], is_recursive=True):
+                return filename, schemas[schema_map[s]]
+
+        logging.error(f'{filename} does not match any schema!')
+        raise 'Schema mapping is invalid - not all files matches schema'
+
+    if mapping_str:
+        mapping = dict(list(map(lambda x: tuple_split(x, ':'), list(mapping_str.split(',')))))
+        files_schema = list(map(lambda x: map_schema(x, mapping), test_files))
+    else:
+        files_schema = list(map(lambda x: (x, list(schemas.values())[0]), test_files))
+
+    return files_schema
+
+
+def validate_files(files_with_schema: List[Tuple[str, json]]):
     failed = []
-    for yaml_file in yaml_files:
+    for file_with_schema in files_with_schema:
+        yaml_file = file_with_schema[0]
+        json_schema = file_with_schema[1]
         if os.path.exists(yaml_file):
             if os.path.isfile(yaml_file):
                 with open(yaml_file, 'r') as stream:
@@ -72,14 +106,31 @@ def validate_files(yaml_files: list, json_schema: json):
 
 
 if __name__ == '__main__':
+    """
+    json-schema-file = args[0]
+    yaml-json-file-dir = args[1]
+    recursive = args[2]
+    ignore-empty = args[3]
+    mapping = args[4]
+    
+    /path/to/file.json:/path/to/schema.json,/path/to/*:/path/to/schema.json,...
+    """
     args = sys.argv[1:]
 
-    schema = load_schema(args[0])
+    input_schemas = get_all_schemas(args[0])
 
-    files = get_yaml_json_files_list(
+    input_files = get_testing_filenames(
         files_paths_list=args[1],
         is_recursive=args[2].lower() == 'true',
         ignore_empty_files=args[3].lower() == 'true'
     )
 
-    validate_files(files, schema)
+    input_mapping = args[4]
+
+    input_files_with_schema = get_filenames_with_schema(
+        test_files=input_files,
+        schemas=input_schemas,
+        mapping_str=input_mapping
+    )
+
+    validate_files(input_files_with_schema)
