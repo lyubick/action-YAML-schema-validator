@@ -32,7 +32,6 @@ inputs:
       1. /path/to/file:/path/to/schema.json
       2. /path/to/dir/:/path/to/schema.json
     required: false
-    default: ''
 runs:
   using: 'docker'
   image: 'Dockerfile'
@@ -41,3 +40,4 @@ runs:
     - ${{ inputs.yaml-json-file-dir }}
     - ${{ inputs.recursive }}
     - ${{ inputs.ignore-empty }}
+    - ${{ inputs.schema-mapping }}
