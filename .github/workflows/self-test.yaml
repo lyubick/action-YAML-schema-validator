@@ -7,7 +7,7 @@ name: Self Test
 
 jobs:
   runValidation:
-    runs-on: python:3.11-slim
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - name: Run PyTest(s)
