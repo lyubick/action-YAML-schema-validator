@@ -40,7 +40,7 @@ def get_all_filenames(input_path: str, endings: List[str], is_recursive: bool) -
     return output_files
 
 
-def get_all_schemas(schema_file_path: str) -> dict[str, json]:
+def get_all_schemas(schema_file_path: str) -> dict[str, dict]:
     schema_files = get_all_filenames(schema_file_path, endings=['json'], is_recursive=False)
     schemas = list(map(lambda x: (x, json.loads(''.join(open(x, 'r').readlines()))), schema_files))
     return dict(schemas)
@@ -55,12 +55,15 @@ def get_testing_filenames(files_paths_list: str, is_recursive: bool, ignore_empt
     return sorted(yaml_files)
 
 
-def get_filenames_with_schema(test_files: List[str], schemas: dict[str, json], mapping_str: Optional[str]) -> List[Tuple[str, json]]:
+def get_filenames_with_schema(
+        test_files: List[str],
+        schemas: dict[str, dict],
+        mapping_str: Optional[str]) -> List[Tuple[str, dict]]:
     def tuple_split(inp: str, separator: str) -> Tuple[str, str]:
         values = inp.split(separator)
         return values[0], values[1]
 
-    def map_schema(filename: str, schema_map: dict[str, str]) -> Tuple[str, str]:
+    def map_schema(filename: str, schema_map: dict[str, str]) -> Tuple[str, json]:
         for s in schema_map.keys():
             if filename in get_all_filenames(input_path=s, endings=['yaml', 'json'], is_recursive=True):
                 return filename, schemas[schema_map[s]]
@@ -77,7 +80,7 @@ def get_filenames_with_schema(test_files: List[str], schemas: dict[str, json], m
     return files_schema
 
 
-def validate_files(files_with_schema: List[Tuple[str, json]]):
+def validate_files(files_with_schema: List[Tuple[str, dict]]):
     failed = []
     for file_with_schema in files_with_schema:
         yaml_file = file_with_schema[0]
@@ -106,15 +109,6 @@ def validate_files(files_with_schema: List[Tuple[str, json]]):
 
 
 if __name__ == '__main__':
-    """
-    json-schema-file = args[0]
-    yaml-json-file-dir = args[1]
-    recursive = args[2]
-    ignore-empty = args[3]
-    mapping = args[4]
-    
-    /path/to/file.json:/path/to/schema.json,/path/to/*:/path/to/schema.json,...
-    """
     args = sys.argv[1:]
 
     input_schemas = get_all_schemas(args[0])
