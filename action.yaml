@@ -7,7 +7,9 @@ branding:
   color: green
 inputs:
   json-schema-file:
-    description: 'JSON Schema file to validate against'
+    description: |
+      JSON Schema file to validate against. In case mapping is provided, schema
+      provided here will be used as a default (fallback) schema.
     required: true
   yaml-json-file-dir:
     description: |
@@ -32,6 +34,7 @@ inputs:
       1. /path/to/file:/path/to/schema.json
       2. /path/to/dir/:/path/to/schema.json
     required: false
+    default: ''
 runs:
   using: 'docker'
   image: 'Dockerfile'

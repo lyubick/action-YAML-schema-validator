@@ -30,4 +30,6 @@ jobs:
         with:
           json-schema-file: test/schema/json_schema.json
           yaml-json-file-dir: test/emptyJSONs,test/emptyYAMLSs
-          schema-mapping: 'test/emptyJSONs:test/schema/json_schema.json,test/emptyYAMLSs:test/schema/json_schema.json'
+          schema-mapping:
+            - test/emptyJSONs:test/schema/json_schema.json
+            - test/emptyYAMLSs:test/schema/json_schema.json

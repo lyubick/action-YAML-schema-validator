@@ -40,9 +40,10 @@ def get_all_filenames(input_path: str, endings: List[str], is_recursive: bool) -
     return output_files
 
 
-def get_all_schemas(schema_file_path: str) -> dict[str, dict]:
+def get_all_schemas(schema_file_path: str, default_schema_path: str) -> dict[str, dict]:
     schema_files = get_all_filenames(schema_file_path, endings=['json'], is_recursive=False)
     schemas = list(map(lambda x: (x, json.loads(''.join(open(x, 'r').readlines()))), schema_files))
+    schemas.append(('default', json.loads(''.join(open(default_schema_path, 'r').readlines()))))
     return dict(schemas)
 
 
@@ -59,23 +60,19 @@ def get_filenames_with_schema(
         test_files: List[str],
         schemas: dict[str, dict],
         mapping_str: Optional[str]) -> List[Tuple[str, dict]]:
-    def tuple_split(inp: str, separator: str) -> Tuple[str, str]:
-        values = inp.split(separator)
-        return values[0], values[1]
 
     def map_schema(filename: str, schema_map: dict[str, str]) -> Tuple[str, dict]:
         for s in schema_map.keys():
-            if filename in get_all_filenames(input_path=s, endings=['yaml', 'json'], is_recursive=True):
+            if filename in get_all_filenames(input_path=s, endings=['yaml', 'json', 'yml'], is_recursive=True):
                 return filename, schemas[schema_map[s]]
 
-        logging.error(f'{filename} does not match any schema!')
-        raise 'Schema mapping is invalid - not all files matches schema'
+        return filename, schemas['default']
 
     if mapping_str:
         mapping = dict(list(map(lambda x: tuple_split(x, ':'), list(mapping_str.split(',')))))
         files_schema = list(map(lambda x: map_schema(x, mapping), test_files))
     else:
-        files_schema = list(map(lambda x: (x, list(schemas.values())[0]), test_files))
+        files_schema = list(map(lambda x: (x, schemas['default']), test_files))
 
     return files_schema
 
@@ -108,18 +105,36 @@ def validate_files(files_with_schema: List[Tuple[str, dict]]):
     return True
 
 
+def tuple_split(inp: str, separator: str) -> Tuple[str, str]:
+    """
+
+    :param inp: String in a form of <key><separator><value>, that will be split into (key, value) tuple.
+    :param separator: String representing separator.
+    :return: filename: str, schema: str
+    """
+    values = inp.split(separator)
+    return values[0], values[1]
+
+
 if __name__ == '__main__':
     args = sys.argv[1:]
 
-    input_schemas = get_all_schemas(args[0])
+    input_mapping = args[4]
+
+    input_schemas = {}
+
+    if input_mapping:
+        logging.error(input_mapping)
+        input_mapped_schemas = ','.join(list(map(lambda x: tuple_split(x, ':')[1], input_mapping.split(','))))
+        input_schemas = get_all_schemas(input_mapped_schemas)
+
+    input_schemas['default'] = list(get_all_schemas(args[0]).values())[0]
 
     input_files = get_testing_filenames(
         files_paths_list=args[1],
         is_recursive=args[2].lower() == 'true',
         ignore_empty_files=args[3].lower() == 'true'
     )
-
-    input_mapping = args[4]
 
     input_files_with_schema = get_filenames_with_schema(
         test_files=input_files,
