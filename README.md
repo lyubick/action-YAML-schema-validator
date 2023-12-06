@@ -21,13 +21,17 @@ jobs:
           json-schema-file: path/to/my/cool/schema.json
           yaml-json-file-dir: path/to/my/cool/yaml/file.yaml
           recursive: false
+          ignore-empty: false
+          schema-mapping: 'path/to/my/cool/yaml/file.yaml:path/to/my/cool/schema.json'
 ```
 One should provide two parameters:
-- `json-schema-file`, points to legit JSON Schema file
-- `yaml-json-file-dir`, is a comma separated list that contains
+- `json-schema-file`, required, points to legit JSON Schema files. In case of mapping this schema will be used as default (fallback) schema.
+- `yaml-json-file-dir`, is a comma separated list that contains:
   - Single YAML or JSON files
   - Directories that will be parsed for `.yaml` or `.yml` or `.json` files
-- `recursive`, True/False depending on if recursive scan for YAML or JSON files in directory required
+- `recursive`, optional, True/False depending on if recursive scan for YAML or JSON files in directory required. Default is False.
+- `ignore-empty`, optional, True/False depends if one want to cause failure on empty files or not, default is True.
+- `schema-mapping`, optional, one can provide file-to-schema mapping, if specific files require specific schema.
 
 ## Results
 ### Success
@@ -95,5 +99,5 @@ On instance:
     {'field2': 'Value2'}
 ```
 
-## Supported & Used by
-* [Printify](https://github.com/printify)
+## Organisations Use
+* [Printify](https://printify.com)
