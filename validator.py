@@ -123,12 +123,12 @@ if __name__ == '__main__':
 
     input_schemas = {}
 
+    input_mapped_schemas = ''
     if input_mapping:
         logging.error(input_mapping)
         input_mapped_schemas = ','.join(list(map(lambda x: tuple_split(x, ':')[1], input_mapping.split(','))))
-        input_schemas = get_all_schemas(input_mapped_schemas)
 
-    input_schemas['default'] = list(get_all_schemas(args[0]).values())[0]
+    input_schemas = get_all_schemas(schema_file_path=input_mapped_schemas, default_schema_path=args[0])
 
     input_files = get_testing_filenames(
         files_paths_list=args[1],
