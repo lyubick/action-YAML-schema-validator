@@ -4,6 +4,7 @@ import os.path
 import pathlib
 import re
 import sys
+from urllib.request import Request, urlopen
 from typing import List, Tuple, Optional
 
 import yaml
@@ -11,8 +12,14 @@ from jsonschema import validate
 from jsonschema.exceptions import ValidationError
 
 
-def get_all_filenames(input_path: str, endings: List[str], is_recursive: bool) -> List[str]:
-    paths = list(input_path.split(','))
+SCHEMA_MAPPING_SEPARATOR = '->'
+
+
+def get_all_filenames(input_path: str or List[str], endings: List[str], is_recursive: bool) -> List[str]:
+    if isinstance(input_path, str):
+        paths = list(input_path.split(','))
+    else:
+        paths = input_path
 
     regex_endings = f'.*\\.({"|".join(endings)})'
 
@@ -40,10 +47,35 @@ def get_all_filenames(input_path: str, endings: List[str], is_recursive: bool) -
     return output_files
 
 
+def get_json_from_lines(lines: List[str]) -> dict:
+    return json.loads('\n'.join(lines))
+
+
+def handle_http_schema(input_url: str):
+    url = Request(input_url, headers={'User-Agent': 'Mozilla/5.0'})
+
+    content = urlopen(url).read().decode('utf-8')
+
+    return input_url, get_json_from_lines(list(content.split('\n')))
+
+
 def get_all_schemas(schema_file_path: str, default_schema_path: str) -> dict[str, dict]:
-    schema_files = get_all_filenames(schema_file_path, endings=['json'], is_recursive=False)
-    schemas = list(map(lambda x: (x, json.loads(''.join(open(x, 'r').readlines()))), schema_files))
-    schemas.append(('default', json.loads(''.join(open(default_schema_path, 'r').readlines()))))
+    split_path = list(schema_file_path.split(','))
+    http_path = list(filter(lambda x: 'https://' in x, split_path))
+    file_paths = list(filter(lambda x: 'https://' not in x, split_path))
+
+    schema_files = get_all_filenames(file_paths, endings=['json'], is_recursive=False)
+    schemas = list(map(lambda x: (x, get_json_from_lines(open(x, 'r').readlines())), schema_files))
+
+    if 'https://' in default_schema_path:
+        schemas.append(('default', handle_http_schema(default_schema_path)[1]))
+    else:
+        schemas.append(('default', get_json_from_lines(open(default_schema_path, 'r').readlines())))
+
+    if http_path:
+        http_schemas = list(map(lambda x: handle_http_schema(x), http_path))
+        schemas.extend(http_schemas)
+
     return dict(schemas)
 
 
@@ -60,7 +92,6 @@ def get_filenames_with_schema(
         test_files: List[str],
         schemas: dict[str, dict],
         mapping_str: Optional[str]) -> List[Tuple[str, dict]]:
-
     def map_schema(filename: str, schema_map: dict[str, str]) -> Tuple[str, dict]:
         for s in schema_map.keys():
             if filename in get_all_filenames(input_path=s, endings=['yaml', 'json', 'yml'], is_recursive=True):
@@ -69,7 +100,7 @@ def get_filenames_with_schema(
         return filename, schemas['default']
 
     if mapping_str:
-        mapping = dict(list(map(lambda x: tuple_split(x, ':'), list(mapping_str.split(',')))))
+        mapping = dict(list(map(lambda x: tuple_split(x, SCHEMA_MAPPING_SEPARATOR), list(mapping_str.split(',')))))
         files_schema = list(map(lambda x: map_schema(x, mapping), test_files))
     else:
         files_schema = list(map(lambda x: (x, schemas['default']), test_files))
@@ -126,7 +157,7 @@ if __name__ == '__main__':
     input_mapped_schemas = ''
     if input_mapping:
         logging.error(input_mapping)
-        input_mapped_schemas = ','.join(list(map(lambda x: tuple_split(x, ':')[1], input_mapping.split(','))))
+        input_mapped_schemas = ','.join(list(map(lambda x: tuple_split(x, SCHEMA_MAPPING_SEPARATOR)[1], input_mapping.split(','))))
 
     input_schemas = get_all_schemas(schema_file_path=input_mapped_schemas, default_schema_path=args[0])
 

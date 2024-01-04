@@ -8,8 +8,8 @@ branding:
 inputs:
   json-schema-file:
     description: |
-      JSON Schema file to validate against. In case mapping is provided, schema
-      provided here will be used as a default (fallback) schema.
+      JSON Schema file or HTTPS URL to file to validate against. In case, mapping
+      is provided, schema provided here will be used as a default schema.
     required: true
   yaml-json-file-dir:
     description: |
@@ -30,9 +30,8 @@ inputs:
     default: 'true'
   schema-mapping:
     description: |
-      File/Directory and Schema mapping, provided in a one of formats:
-      1. /path/to/file:/path/to/schema.json
-      2. /path/to/dir/:/path/to/schema.json
+      Files or directories with schema mapping, mapped using `->`. Multiple
+      mappings can be defined separating each mapping by comma.
     required: false
     default: ''
 runs:

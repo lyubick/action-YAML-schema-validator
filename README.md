@@ -19,13 +19,13 @@ jobs:
         uses: lyubick/action-YAML-schema-validator@v2
         with:
           json-schema-file: path/to/my/cool/schema.json
-          yaml-json-file-dir: path/to/my/cool/yaml/file.yaml
+          yaml-json-file-dir: path/to/my/cool/yaml/file.yaml,path/to/my/cool/yaml/another/file.yaml
           recursive: false
           ignore-empty: false
-          schema-mapping: 'path/to/my/cool/yaml/file.yaml:path/to/my/cool/schema.json'
+          schema-mapping: 'path/to/my/cool/yaml/file.yaml->path/to/my/cool/schema.json,path/to/my/cool/yaml/another/file.yaml->https://path/to/schema'
 ```
 One should provide two parameters:
-- `json-schema-file`, required, points to legit JSON Schema files. In case of mapping this schema will be used as default (fallback) schema.
+- `json-schema-file`, required, points to legit JSON Schema files. In case of mapping this schema will be used as default (fallback) schema. Can point to online schemas that can be obtained via http(s), without authorization.
 - `yaml-json-file-dir`, is a comma separated list that contains:
   - Single YAML or JSON files
   - Directories that will be parsed for `.yaml` or `.yml` or `.json` files
