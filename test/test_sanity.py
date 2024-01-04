@@ -127,9 +127,55 @@ class Test:
             default_schema_path=f'{self.abs_path}/schema/json_schema.json'
         )
         files = validator.get_testing_filenames(f'{self.abs_path}/emptyJSONs/empty.json', False, False)
-        files_schemas = validator.get_filenames_with_schema(files, schemas, f"{self.abs_path}/emptyJSONs/empty.json:{self.abs_path}/schema/json_schema.json")
+        files_schemas = validator.get_filenames_with_schema(
+            files,
+            schemas,
+            f"{self.abs_path}/emptyJSONs/empty.json->{self.abs_path}/schema/json_schema.json"
+        )
         try:
             validator.validate_files(files_schemas)
             assert False
         except json.JSONDecodeError as exc:
+            assert True
+
+    def test11_validate_http_schema(self):
+        schemas = validator.get_all_schemas(
+            schema_file_path=f'https://json-schema.org/draft-04/schema',
+            default_schema_path=f'https://json-schema.org/draft-04/schema'
+        )
+
+        files = validator.get_testing_filenames(f'{self.abs_path}/schema/json_schema.json', False, False)
+        files_schemas = validator.get_filenames_with_schema(
+            files,
+            schemas,
+            f"{self.abs_path}/schema/json_schema.json->https://json-schema.org/draft-04/schema"
+        )
+        validator.validate_files(files_schemas)
+        assert True
+
+        files = validator.get_testing_filenames(f'{self.abs_path}/schema/json_schema.json', False, False)
+        files_schemas = validator.get_filenames_with_schema(files, schemas, None)
+        validator.validate_files(files_schemas)
+        assert True
+
+        files = validator.get_testing_filenames(f'{self.abs_path}/schema/json_invalid_schema.json', False, False)
+        files_schemas = validator.get_filenames_with_schema(
+            files,
+            schemas,
+            f"{self.abs_path}/schema/json_invalid_schema.json->https://json-schema.org/draft-04/schema"
+        )
+
+        try:
+            validator.validate_files(files_schemas)
+            assert False
+        except Exception as exc:
+            assert True
+
+        files = validator.get_testing_filenames(f'{self.abs_path}/schema/', False, False)
+        files_schemas = validator.get_filenames_with_schema(files, schemas, None)
+
+        try:
+            validator.validate_files(files_schemas)
+            assert False
+        except Exception as exc:
             assert True

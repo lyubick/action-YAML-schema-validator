@@ -30,4 +30,15 @@ jobs:
         with:
           json-schema-file: test/schema/json_schema.json
           yaml-json-file-dir: test/emptyJSONs,test/emptyYAMLSs
-          schema-mapping: "test/emptyJSONs:test/schema/json_schema.json,test/emptyYAMLSs:test/schema/json_schema.json"
+          schema-mapping: "test/emptyJSONs->test/schema/json_schema.json,test/emptyYAMLSs->test/schema/json_schema.json"
+      - name: Run Action (check online schema + mapping)
+        uses: ./
+        with:
+          json-schema-file: https://json-schema.org/draft-04/schema
+          yaml-json-file-dir: test/schema/json_schema.json
+          schema-mapping: "test/schema/json_schema.json->https://json-schema.org/draft-04/schema"
+      - name: Run Action (check online schema)
+        uses: ./
+        with:
+          json-schema-file: https://json-schema.org/draft-04/schema
+          yaml-json-file-dir: test/schema/json_schema.json
