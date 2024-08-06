@@ -98,6 +98,3 @@ Failed validating 'additionalProperties' in schema:
 On instance:
     {'field2': 'Value2'}
 ```
-
-## Organisations Use
-* [Printify](https://printify.com)
